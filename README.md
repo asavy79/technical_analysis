@@ -19,12 +19,14 @@ A Python-based technical analysis tool for stock market analysis that implements
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone [your-repository-url]
 cd technical_analysis
 ```
 
 2. Install the required dependencies:
+
 ```bash
 pip install yfinance pandas numpy
 ```
@@ -79,8 +81,4 @@ bearish_signals = strategy.calculate_bearish_cross(stock)
 
 ## Contributing
 
-Feel free to submit issues and enhancement requests!
-
-## License
-
-[Your chosen license]
+Feel free to contribute!
