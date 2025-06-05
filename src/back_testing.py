@@ -1,4 +1,4 @@
-from main import Stock
+from src.main import Stock
 
 
 class BackTest:
