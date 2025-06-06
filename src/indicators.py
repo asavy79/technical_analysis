@@ -2,7 +2,7 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 from abc import ABC, abstractmethod
-from src.main import Stock
+from main import Stock
 
 
 class Indicator(ABC):

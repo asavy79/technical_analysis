@@ -1,5 +1,5 @@
-from src.main import Stock
-from src.indicators import MovingAverage
+from main import Stock
+from indicators import MovingAverage
 import numpy as np
 from abc import ABC, abstractmethod
 
