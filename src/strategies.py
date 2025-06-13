@@ -17,8 +17,9 @@ class Strategy(ABC):
         pass
 
 
-class MovingAverageCross:
+class MovingAverageCross(Strategy):
     def __init__(self, lower_ma: int, higher_ma: int):
+        super().__init__()
         self.lower_ma = lower_ma
         self.higher_ma = higher_ma
 

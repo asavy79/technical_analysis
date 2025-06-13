@@ -31,13 +31,16 @@ class BackTest:
         sell = sell[sell.index > first_buy_date]
         if len(sell) > len(buy):
             sell = sell[:len(buy)][:]
+        elif len(sell) < len(buy):
+            buy = buy[:len(sell)][:]
         return buy, sell
 
     def compute_metrics(self):
         pass
 
 
-stock_data = Stock("QQQ", 1000)
-backTest = BackTest(MovingAverageCross(50, 200), 2000)
+stock_data = Stock("SPY", 1000)
+strategy = MovingAverageCross(20, 60)
+backTest = BackTest(strategy, 1000)
 
 print(backTest.simulate_trades(stock_data))
