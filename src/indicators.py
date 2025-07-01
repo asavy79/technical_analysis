@@ -25,9 +25,20 @@ class MovingAverage(Indicator):
         total_sub = history_days + self.period
         ticker = stock_data.get_ticker()
 
-        history = yf.Ticker(ticker).history(period=f"{total_sub}d")
-        moving_averages = history["Close"].rolling(
-            self.period).mean()
+        try:
+            history = yf.Ticker(ticker).history(period=f"{total_sub}d")
+        except Exception as e:
+            print(f"Error getting history for {ticker}: {e}")
+            return pd.Series()
+
+
+        try:
+            moving_averages = history["Close"].rolling(
+                self.period).mean()
+        except Exception as e:
+            print(f"Error getting moving averages for {ticker}: {e}")
+            return pd.Series()
+
         return moving_averages[self.period:][:]
 
 
@@ -42,11 +53,23 @@ class RSI(Indicator):
         total_sub = history_days + self.period
         ticker = stock_data.get_ticker()
 
-        history = yf.Ticker(ticker).history(period=f"{total_sub}d")["Close"]
-        differences = history.diff()
+        try:
+            history = yf.Ticker(ticker).history(period=f"{total_sub}d")["Close"]
+        except Exception as e:
+            print(f"Error getting history for {ticker}: {e}")
+            return pd.Series()
+
+        try:
+            differences = history.diff()
+        except Exception as e:
+            print(f"Error getting differences for {ticker}: {e}")
+            return pd.Series()
 
         rsi_values = self.get_rsi_values(differences)
 
+        if rsi_values.empty:
+            print(f"RSI values are empty for {ticker}")
+            return pd.Series()
         return rsi_values
 
     def get_period(self):
@@ -63,7 +86,11 @@ class RSI(Indicator):
         avg_gain = gains.ewm(alpha=1/period, adjust=False).mean()
         avg_loss = losses.ewm(alpha=1/period, adjust=False).mean()
 
-        rs = avg_gain / avg_loss
+        try:
+            rs = avg_gain / avg_loss
+        except Exception as e:
+            print(f"Error getting RS for stock: {e}")
+            return pd.Series()
 
         # handle edge case where the stock has only gone up in the time period
         rs = rs.replace([np.inf, -np.inf], np.nan).fillna(0)
@@ -72,10 +99,3 @@ class RSI(Indicator):
         return rsi
 
 
-indicator = RSI(period=14)
-
-
-stock = Stock("AAPL", 100)
-mas = indicator.compute(stock)
-
-print(mas)

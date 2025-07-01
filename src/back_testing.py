@@ -39,8 +39,8 @@ class BackTest:
         pass
 
 
-stock_data = Stock("SPY", 1000)
-strategy = MovingAverageCross(20, 60)
-backTest = BackTest(strategy, 1000)
+# stock_data = Stock("SPY", 1000)
+# strategy = MovingAverageCross(20, 60)
+# backTest = BackTest(strategy, 1000)
 
-print(backTest.simulate_trades(stock_data))
+# print(backTest.simulate_trades(stock_data))
