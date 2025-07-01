@@ -12,7 +12,7 @@ This project was created to:
 
 ## 🔍 Key Findings
 
-Through extensive backtesting and analysis, I discovered that the **50-200 day moving average crossover strategy** shows remarkable effectiveness:
+Through backtesting and analysis, I discovered that the **50-200 day moving average crossover strategy** shows to be one of the more effective strategies:
 
 - **Consistent Performance**: The 50-200 day MA crossover provides reliable signals for major trend changes
 - **Risk Management**: This longer-term strategy helps avoid false signals common in shorter-term indicators
@@ -102,8 +102,6 @@ This project has been instrumental in my understanding of:
 - **Data Processing**: Handling large datasets and time series analysis
 - **Backtesting**: The critical role of historical testing in strategy validation
 
-## 🔄 Ongoing Development
-
 
 ## 🤝 Contributing
 
@@ -116,5 +114,3 @@ This is primarily a learning project, but I'm always open to feedback and sugges
 - Market research on effective trading strategies
 
 ---
-
-*This project represents my journey into algorithmic trading and technical analysis. The 50-200 day moving average crossover strategy has proven to be a reliable foundation for understanding market trends and developing more sophisticated trading approaches.*
