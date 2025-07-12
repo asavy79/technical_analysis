@@ -8,7 +8,7 @@ class Indicator(ABC):
         super().__init__()
 
     @abstractmethod
-    def compute(self, stock_data):
+    def compute(self, stock_data: pd.DataFrame):
         pass
 
     @abstractmethod
@@ -16,7 +16,7 @@ class Indicator(ABC):
         pass
 
 
-class MovingAverage(Indicator):
+class SMA(Indicator):
     def __init__(self, period):
         super().__init__()
         self.period = period
@@ -40,6 +40,25 @@ class MovingAverage(Indicator):
 
     def __str__(self):
         return f'MA_{self.period}'
+
+
+class EMA(Indicator):
+    def __init__(self, period):
+        super().__init__()
+        self.period = period
+
+    def compute(self, stock_data):
+
+        try:
+            history = stock_data['Close']
+        except Exception as e:
+            print(f"Error getting history for Close: {e}")
+
+        ema = history.ewm(span=self.period, adjust=False).mean()
+        return ema
+
+    def __str__(self):
+        return f'EMA_{self.period}'
 
 
 class RSI(Indicator):
