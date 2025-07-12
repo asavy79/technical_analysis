@@ -2,6 +2,7 @@ from main import Stock
 from indicators import MovingAverage
 import numpy as np
 from abc import ABC, abstractmethod
+import pandas as pd
 
 
 class Strategy(ABC):
@@ -9,50 +10,72 @@ class Strategy(ABC):
         super().__init__()
 
     @abstractmethod
-    def calculate_bullish_signal(self, stock_data: Stock):
-        pass
-
-    @abstractmethod
-    def calculate_bearish_signal(self, stock_data: Stock):
+    def calculate_signals(self, stock_data: pd.DataFrame):
         pass
 
 
-class MovingAverageCross(Strategy):
-    def __init__(self, lower_ma: int, higher_ma: int):
+class SMACross(Strategy):
+    def __init__(self, lower_column: str, upper_column):
         super().__init__()
-        self.lower_ma = lower_ma
-        self.higher_ma = higher_ma
+        self.lower_column = lower_column
+        self.upper_column = upper_column
 
-    def calculate_bullish_signal(self, stock_data: Stock):
-        ma_lower = MovingAverage(self.lower_ma)
-        ma_upper = MovingAverage(self.higher_ma)
+    def calculate_signals(self, stock_data):
 
-        ma_lower_values = np.array(ma_lower.compute(stock_data))
-        ma_upper_values = np.array(ma_upper.compute(stock_data))
+        if self.lower_column not in stock_data.columns:
+            raise ValueError(
+                f"Column '{self.lower_column}' not found in stock_data")
 
-        indices = []
-        arr_len = len(ma_lower_values)
+        if self.lower_column not in stock_data.columns:
+            raise ValueError(
+                f"Column '{self.lower_column}' not found in stock_data")
 
-        for i in range(1, arr_len):
-            if ma_lower_values[i-1] < ma_upper_values[i-1] and ma_lower_values[i] > ma_upper_values[i]:
-                indices.append(i)
+        df = stock_data.copy()
+        df[[self.lower_column, self.upper_column]].dropna()
 
-        history = stock_data.history
-        return history.iloc[indices][:]
+        signals = pd.Series(0, index=df.index)
 
-    def calculate_bearish_signal(self, stock_data: Stock):
-        ma_lower = MovingAverage(self.lower_ma)
-        ma_upper = MovingAverage(self.higher_ma)
+        prev_short = df[self.lower_column].shift(1)
+        prev_long = df[self.upper_column].shift(1)
 
-        ma_lower_values = np.array(ma_lower.compute(stock_data))
-        ma_upper_values = np.array(ma_upper.compute(stock_data))
+        golden_cross = (prev_short < prev_long) & (
+            df[self.lower_column] > df[self.upper_column])
+        death_cross = (prev_short > prev_long) & (
+            df[self.lower_column] < df[self.upper_column])
 
-        indices = []
-        arr_len = len(ma_lower_values)
+        signals[golden_cross] = 1  # Buy
+        signals[death_cross] = -1  # Sell
 
-        for i in range(1, arr_len):
-            if ma_lower_values[i-1] > ma_upper_values[i-1] and ma_lower_values[i] < ma_upper_values[i]:
-                indices.append(i)
+        return signals
 
-        history = stock_data.history
-        return history.iloc[indices][:]
+
+class RSICross(Strategy):
+    def __init__(self, rsi_column: str, lower_bound: int, upper_bound: int):
+        super().__init__()
+        self.rsi_column = rsi_column
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+
+    def calculate_signals(self, stock_data):
+
+        if self.rsi_column not in stock_data.columns:
+            raise ValueError(
+                f"Column '{self.rsi_column}' not found in stock_data.")
+
+        df = stock_data.copy()
+        df = df.dropna(subset=[self.rsi_column])
+
+        signals = pd.Series(0, index=df.index)
+        rsi_data = df[self.rsi_column]
+        rsi_prev = rsi_data.shift(1)
+
+        golden_cross = (rsi_prev > self.lower_bound) & (
+            rsi_data < self.lower_bound)
+
+        death_cross = (rsi_prev < self.upper_bound) & (
+            rsi_data > self.upper_bound)
+
+        signals[golden_cross] = 1
+        signals[death_cross] = -1
+
+        return signals
