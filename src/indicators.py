@@ -1,8 +1,6 @@
-import yfinance as yf
 import pandas as pd
 import numpy as np
 from abc import ABC, abstractmethod
-from main import Stock
 
 
 class Indicator(ABC):
@@ -10,7 +8,11 @@ class Indicator(ABC):
         super().__init__()
 
     @abstractmethod
-    def compute(self, stock_data: Stock):
+    def compute(self, stock_data):
+        pass
+
+    @abstractmethod
+    def __str__(self):
         pass
 
 
@@ -19,27 +21,25 @@ class MovingAverage(Indicator):
         super().__init__()
         self.period = period
 
-    def compute(self, stock_data: Stock):
-
-        history_days = stock_data.get_period()
-        total_sub = history_days + self.period
-        ticker = stock_data.get_ticker()
+    def compute(self, stock_data):
 
         try:
-            history = yf.Ticker(ticker).history(period=f"{total_sub}d")
+            history = stock_data['Close']
         except Exception as e:
-            print(f"Error getting history for {ticker}: {e}")
+            print(f"Error getting history for Close: {e}")
             return pd.Series()
 
-
         try:
-            moving_averages = history["Close"].rolling(
+            moving_averages = history.rolling(
                 self.period).mean()
         except Exception as e:
-            print(f"Error getting moving averages for {ticker}: {e}")
+            print(f"Error getting moving averages: {e}")
             return pd.Series()
 
-        return moving_averages[self.period:][:]
+        return moving_averages
+
+    def __str__(self):
+        return f'MA_{self.period}'
 
 
 class RSI(Indicator):
@@ -47,28 +47,24 @@ class RSI(Indicator):
         super().__init__()
         self.period = period
 
-    def compute(self, stock_data: Stock):
-
-        history_days = stock_data.get_period()
-        total_sub = history_days + self.period
-        ticker = stock_data.get_ticker()
+    def compute(self, stock_data):
 
         try:
-            history = yf.Ticker(ticker).history(period=f"{total_sub}d")["Close"]
+            history = stock_data['Close']
         except Exception as e:
-            print(f"Error getting history for {ticker}: {e}")
+            print(f"Error getting closing prices for stock: {e}")
             return pd.Series()
 
         try:
             differences = history.diff()
         except Exception as e:
-            print(f"Error getting differences for {ticker}: {e}")
+            print(f"Error getting differences for stock: {e}")
             return pd.Series()
 
         rsi_values = self.get_rsi_values(differences)
 
         if rsi_values.empty:
-            print(f"RSI values are empty for {ticker}")
+            print(f"RSI values are empty")
             return pd.Series()
         return rsi_values
 
@@ -98,4 +94,5 @@ class RSI(Indicator):
         rsi = 100 - (100 / (1+rs))
         return rsi
 
-
+    def __str__(self):
+        return f'RSI_{self.period}d'
