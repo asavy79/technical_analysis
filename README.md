@@ -1,24 +1,14 @@
-# Technical Analysis Learning Project
+# Technical Analysis Research Project
 
-A Python-based technical analysis tool I built to learn about algorithmic trading and market analysis. This project explores various technical indicators and trading strategies, with a particular focus on moving average crossovers and features a robust, extensible architecture.
+A Python-based technical analysis tool I built to learn about algorithmic trading and market analysis. This project includes various technical indicators and trading strategies, with a particular focus on moving average crossovers and RSI crosses.
 
 ## 🎯 Project Goals
 
 This project was created to:
 - Learn about technical analysis and algorithmic trading concepts
 - Implement and test various trading strategies from scratch
-- Understand market dynamics through data analysis
-- Build a foundation for more advanced trading algorithms
-- Practice software engineering principles with clean, maintainable code
+- Significantly speed up the process of strategy backtesting
 
-## 🔍 Key Findings
-
-Through extensive backtesting and analysis, I discovered that the **50-200 day moving average crossover strategy** shows remarkable effectiveness:
-
-- **Consistent Performance**: The 50-200 day MA crossover provides reliable signals for major trend changes
-- **Risk Management**: This longer-term strategy helps avoid false signals common in shorter-term indicators
-- **Market Timing**: Particularly effective for identifying major bull/bear market transitions
-- **Reduced Noise**: Longer moving averages filter out market noise and focus on significant trends
 
 ## 🚀 Features Implemented
 
@@ -145,16 +135,6 @@ for name, strategy in strategies:
     print(f"{name}: {results['metrics']['total_return']:.2%} return")
 ```
 
-## 📈 Learning Outcomes
-
-This project has been instrumental in my understanding of:
-- **Market Analysis**: How technical indicators work in real market conditions
-- **Software Architecture**: Building extensible, maintainable trading systems
-- **Data Processing**: Handling time series data with proper alignment and caching
-- **Algorithm Design**: Creating robust trading algorithms with proper validation
-- **Performance Analysis**: Comprehensive backtesting and risk assessment
-- **Object-Oriented Design**: Clean separation of concerns and reusable components
-
 ## 🔧 Technical Highlights
 
 ### **Intelligent Caching System**
@@ -177,22 +157,12 @@ This project has been instrumental in my understanding of:
 - Graceful handling of API failures and data issues
 - Clear error messages for debugging
 
-## 🔄 Ongoing Development
-
-This is an active learning project that I continue to expand:
-
-- **Additional Indicators**: Bollinger Bands, Stochastic Oscillator, Williams %R
-- **Advanced Strategies**: Multi-timeframe analysis, portfolio optimization
-- **Risk Management**: Position sizing, stop-loss implementation
-- **Visualization**: Charts and performance graphs
-- **Live Trading**: Real-time data integration and paper trading
 
 ## 🧪 Testing & Validation
 
-- **Unit Tests**: Comprehensive testing for core components
+- **Unit Tests**: Testing for the main features
 - **Integration Tests**: End-to-end strategy validation
 - **Performance Tests**: Backtesting across multiple market conditions
-- **Code Quality**: Type hints, documentation, and clean architecture
 
 ## 🤝 Contributing
 
@@ -206,20 +176,7 @@ This is primarily a learning project, but I'm always open to feedback and sugges
 - Market research on effective trading strategies
 - Software engineering best practices and design patterns
 
-## 🎯 Running the Demo
-
-To see the system in action:
-
-```bash
-python src/test_func.py
-```
-
-This will demonstrate:
-- The effective 50-200 day moving average strategy
-- RSI and MACD trading strategies
-- Indicator caching and performance
-- Strategy comparison and analysis
 
 ---
 
-*This project represents my journey into algorithmic trading and technical analysis. The 50-200 day moving average crossover strategy has proven to be a reliable foundation for understanding market trends, while the extensible architecture demonstrates solid software engineering principles that can scale to more sophisticated trading approaches.*
+*Use at your own risk. No strategy generated here is guaranteed to generate positive returns. Have fun ;)*
