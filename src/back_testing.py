@@ -54,7 +54,7 @@ class BackTest:
                 exit_price = price
                 exit_date = date
 
-                # Calculate trade return
+                # Big W trade
                 trade_return = (exit_price - entry_price) / entry_price
 
                 trades.append({
