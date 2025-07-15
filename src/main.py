@@ -1,56 +1,48 @@
 import yfinance as yf
 import pandas as pd
-from typing import List
-from indicators import Indicator
+from typing import Dict, Any
 
 
-class Stock:
-    def __init__(self, ticker: str, period: int):
-        self.ticker = ticker
+class MarketData:
+    def __init__(self, ticker: str, period: str):
+        if not ticker or not isinstance(ticker, str):
+            raise ValueError("Ticker must be a non-empty string")
+        if not period or not isinstance(period, str):
+            raise ValueError("Period must be a non-empty string")
+            
+        self.ticker = ticker.upper()
         self.period = period
-        self.history = self.__load_history()
-
-    def get_history(self):
-        return self.history
-
-    def __load_history(self):
+        self.raw_data = self._fetch_data()
+        self._indicator_cache: Dict[str, pd.Series] = {}
+    
+    def _fetch_data(self) -> pd.DataFrame:
         try:
-            history = yf.Ticker(self.ticker).history(period=f"{self.period}d")
-            return history
+            data = yf.Ticker(self.ticker).history(period=self.period)
+            if data.empty:
+                raise ValueError(f"No data found for ticker {self.ticker}")
+            return data
         except Exception as e:
-            print(f"Error getting history for {self.ticker}: {e}")
-            return pd.DataFrame()
-
-    def add_indicators(self, strategies: List[Indicator]):
-        history = self.get_history()
-        try:
-            for strategy in strategies:
-                label, vals = str(strategy), strategy.compute(history)
-                self.history[label] = vals
-
-        except Exception as e:
-            print("Failed to add strategies")
-
-    def get_col(self, col_name: str):
-        if col_name not in self.history.columns:
-            raise ValueError(f"Column {col_name} not found in history")
-        if self.history.empty:
-            raise ValueError("History is empty")
-        return self.history[col_name]
-
-    def get_cols(self, col_names: list[str]):
-        for col_name in col_names:
-            if col_name not in self.history.columns:
-                raise ValueError(f"Column {col_name} not found in history")
-        if self.history.empty:
-            raise ValueError("History is empty")
-        return self.history[col_names]
-
-    def get_dates(self):
-        return self.history.index
-
-    def get_period(self):
-        return self.period
-
-    def get_ticker(self):
+            raise ValueError(f"Error fetching data for {self.ticker}: {e}")
+    
+    def get_indicator_data(self, indicator) -> pd.Series:
+        indicator_key = str(indicator)
+        
+        if indicator_key not in self._indicator_cache:
+            try:
+                self._indicator_cache[indicator_key] = indicator.compute(self.raw_data)
+            except Exception as e:
+                raise ValueError(f"Error computing {indicator_key}: {e}")
+        
+        return self._indicator_cache[indicator_key]
+    
+    def get_raw_data(self) -> pd.DataFrame:
+        return self.raw_data
+    
+    def get_ticker(self) -> str:
         return self.ticker
+    
+    def get_period(self) -> str:
+        return self.period
+    
+    def clear_cache(self):
+        self._indicator_cache.clear()
