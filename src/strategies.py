@@ -216,3 +216,19 @@ class MACDHistogramStrategy(Strategy):
             'buy': buy_signals.fillna(False),
             'sell': sell_signals.fillna(False)
         }
+
+
+class CustomStrategy(Strategy):
+
+    def __init__(self):
+        self.strategies = []
+
+    def add_strategy(self, strategy: Strategy):
+        self.strategies.append(strategy)
+
+    def calculate_signals(self, market_data):
+
+        if not self.strategies:
+            raise ValueError("No strategies added yet!")
+
+        # Loop through strategies and use bitwise and to generate buy and sell markers
