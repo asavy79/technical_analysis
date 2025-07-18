@@ -228,6 +228,8 @@ class CustomStrategy(Strategy):
 
     def calculate_signals(self, market_data):
 
+        signal_columns = []
+
         if not self.strategies:
             raise ValueError("No strategies added yet!")
 
