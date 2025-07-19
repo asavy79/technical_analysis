@@ -96,11 +96,11 @@ class RSICross(Strategy):
         except Exception as e:
             raise ValueError(f"Error computing RSI: {e}")
 
-        # RSI crosses above lower bound - totally a buy!
+        # RSI crosses above lower bound - buy!
         buy_signals = (rsi_values > self.lower_bound) & (
             rsi_values.shift(1) <= self.lower_bound)
 
-        # RSI crosses below upper bound - totally a sell!
+        # RSI crosses below upper bound - sell!
         sell_signals = (rsi_values < self.upper_bound) & (
             rsi_values.shift(1) >= self.upper_bound)
 
@@ -220,17 +220,52 @@ class MACDHistogramStrategy(Strategy):
 
 class CustomStrategy(Strategy):
 
-    def __init__(self):
-        self.strategies = []
+    def __init__(self, mode='all'):
+        self.strategies: List[Strategy] = []
+        if mode not in ['all', 'any', 'majority']:
+            raise ValueError(
+                "Custom strategy mode must be either 'all', 'any', or 'majority'")
+        self.mode = mode
 
     def add_strategy(self, strategy: Strategy):
         self.strategies.append(strategy)
 
-    def calculate_signals(self, market_data):
+    def validate_data(self, market_data):
 
-        signal_columns = []
+        for s in self.strategies:
+            s.validate_data(market_data)
+
+    def get_required_indicators(self):
+        res = []
+
+        for s in self.strategies:
+            indicators = s.get_required_indicators()
+            res += indicators
+        return res
+
+    def calculate_signals(self, market_data: MarketData):
 
         if not self.strategies:
             raise ValueError("No strategies added yet!")
+
+        buy_df = pd.DataFrame()
+        sell_df = pd.DataFrame()
+        for num, s in enumerate(self.strategies):
+            new_col = s.calculate_signals(market_data)
+            new_label = f"Strategy_{num}"
+            buy_df[new_label] = new_col['buy']
+            sell_df[new_label] = new_col['sell']
+
+        if self.mode == 'all':
+            combined_buy = buy_df.all(axis=1)
+            combined_sell = sell_df.all(axis=1)
+        else:
+            combined_buy = buy_df.any(axis=1)
+            combined_sell = sell_df.any(axis=1)
+
+        return {
+            'buy': combined_buy,
+            'sell': combined_sell
+        }
 
         # Loop through strategies and use bitwise and to generate buy and sell markers
