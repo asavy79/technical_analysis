@@ -5,7 +5,7 @@ from back_testing import BackTest
 import pandas as pd
 
 
-apple = MarketData("spy", "5y")
+apple = MarketData("qqq", "5y")
 
 rsi_cross_strategy = RSIExtremes(14, 30, 70)
 

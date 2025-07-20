@@ -20,7 +20,7 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/strategy")
 async def root():
     logger.info("Hello from the main api route!")
     return {
