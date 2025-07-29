@@ -5,11 +5,11 @@ from back_testing import BackTest
 import pandas as pd
 
 
-apple = MarketData("qqq", "5y")
+apple = MarketData("tsla", "10y")
 
 rsi_cross_strategy = RSIExtremes(14, 30, 70)
 
-ma_cross_strategy = MovingAverageCross(50, 200, "SMA")
+ma_cross_strategy = MovingAverageCross(4, 9, "EMA")
 
 custom_strategy = CustomStrategy(mode='any')
 

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+from models import BacktestRequest
 
 
 app = FastAPI()
@@ -21,7 +22,7 @@ app.add_middleware(
 
 
 @app.get("/strategy")
-async def root():
+async def root(body: BacktestRequest):
     logger.info("Hello from the main api route!")
     return {
         "message": f"Welcome to the backtesting engine!",
