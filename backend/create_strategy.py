@@ -19,6 +19,8 @@ def create_strategy(strategies: List[StrategyConfig]):
 
             strategy_builder = strategy_mapping[strategy_config.type]
 
+            strategy_args = strategy_builder.get_args(strategy_config.params)
+
             new_strategy = strategy_builder()
 
             custom_strategy.add_strategy(new_strategy)

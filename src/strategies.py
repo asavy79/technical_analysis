@@ -2,14 +2,19 @@ from abc import ABC, abstractmethod
 from typing import List, Dict
 import pandas as pd
 import numpy as np
-from indicators import SMA, EMA, RSI, MACDLine, MACDSignal, MACDHistogram
-from main import MarketData
+from src.indicators import SMA, EMA, RSI, MACDLine, MACDSignal, MACDHistogram
+from src.main import MarketData
 
 
 class Strategy(ABC):
     @abstractmethod
     def get_required_indicators(self) -> List:
         """Return list of indicators this strategy needs"""
+        pass
+
+    @classmethod
+    def generate_from_params(cls, params: dict):
+        """Instantation strategy object from api route parameters"""
         pass
 
     @abstractmethod
@@ -44,6 +49,16 @@ class MovingAverageCross(Strategy):
             self.upper_ma = EMA(upper_period)
         else:
             raise ValueError("ma_type must be 'SMA' or 'EMA'")
+
+    @classmethod
+    def generate_from_params(cls, params: dict):
+        if 'lower_period' not in params or 'upper_period' not in params or 'ma_type' not in params:
+            raise ValueError(
+                "Moving average parameters must include 'lower_period', 'upper_period', and 'ma_type'")
+
+        lower_period, upper_period, ma_type = int(params['lower_period']), int(
+            params['upper_period']), params['ma_type']
+        return cls(lower_period, upper_period, ma_type)
 
     def get_required_indicators(self) -> List:
         return [self.lower_ma, self.upper_ma]
@@ -86,6 +101,16 @@ class RSICross(Strategy):
         self.upper_bound = upper_bound
         self.rsi_indicator = RSI(rsi_period)
 
+    @classmethod
+    def generate_from_params(cls, params: dict):
+        if 'rsi_period' not in params or 'lower_bound' not in params or 'upper_bound' not in params:
+            raise ValueError(
+                "RSI cross parameters must include 'rsi_period', 'lower_bound', and 'upper_bound'")
+
+        rsi_period, lower_bound, upper_bound = int(params[
+            'rsi_period']), int(params['lower_bound']), int(params['upper_bound'])
+        return cls(rsi_period, lower_bound, upper_bound)
+
     def get_required_indicators(self) -> List:
         return [self.rsi_indicator]
 
@@ -123,6 +148,16 @@ class RSIExtremes(Strategy):
         self.overbought_threshold = overbought_threshold
         self.rsi_indicator = RSI(rsi_period)
 
+    @classmethod
+    def generate_from_params(cls, params: dict):
+        if 'rsi_period' not in params or 'oversold_threshold' not in params or 'overbought_threshold' not in params:
+            raise ValueError(
+                "RSI extreme parameters must include 'rsi_period', 'oversold_threshold', and 'overbought_threshold'")
+
+        rsi_period, oversold_threshold, overbought_threshold = int(params[
+            'rsi_period']), int(params['oversold_threshold']), int(params['overbought_threshold'])
+        return cls(rsi_period, oversold_threshold, overbought_threshold)
+
     def get_required_indicators(self) -> List:
         return [self.rsi_indicator]
 
@@ -155,6 +190,16 @@ class MACDCross(Strategy):
 
         self.macd_line = MACDLine(short_period, long_period)
         self.macd_signal = MACDSignal(short_period, long_period, signal_period)
+
+    @classmethod
+    def generate_from_params(cls, params: dict):
+        if 'short_period' not in params or 'long_period' not in params or 'signal_period' not in params:
+            raise ValueError(
+                "RSI cross parameters must include 'short_period', 'long_period', and 'signal_period'")
+
+        short_period, long_period, signal_period = int(params[
+            'short_period']), int(params['long_period']), int(params['signal_period'])
+        return cls(short_period, long_period, signal_period)
 
     def get_required_indicators(self) -> List:
         return [self.macd_line, self.macd_signal]
@@ -199,6 +244,16 @@ class MACDHistogramStrategy(Strategy):
         self.macd_histogram = MACDHistogram(
             short_period, long_period, signal_period)
 
+    @classmethod
+    def generate_from_params(cls, params: dict):
+        if 'short_period' not in params or 'long_period' not in params or 'signal_period' not in params:
+            raise ValueError(
+                "RSI cross parameters must include 'short_period', 'long_period', and 'signal_period'")
+
+        short_period, long_period, signal_period = int(params[
+            'short_period']), int(params['long_period']), int(params['signal_period'])
+        return cls(short_period, long_period, signal_period)
+
     def get_required_indicators(self) -> List:
         return [self.macd_histogram]
 
@@ -226,6 +281,14 @@ class CustomStrategy(Strategy):
             raise ValueError(
                 "Custom strategy mode must be either 'all', 'any', or 'majority'")
         self.mode = mode
+
+    @classmethod
+    def generate_from_params(cls, params: dict):
+        if 'mode' not in params:
+            raise ValueError(
+                "Parameters for initializing a custom strategy must include 'mode'")
+
+        return cls(params['mode'])
 
     def add_strategy(self, strategy: Strategy):
         self.strategies.append(strategy)
