@@ -1,7 +1,7 @@
-from indicators import SMA, RSI, EMA, MACDLine
-from main import MarketData
-from strategies import MovingAverageCross, RSICross, CustomStrategy, RSIExtremes
-from back_testing import BackTest
+from src.indicators import SMA, RSI, EMA, MACDLine
+from src.main import MarketData
+from src.strategies import MovingAverageCross, RSICross, CustomStrategy, RSIExtremes
+from src.back_testing import BackTest
 import pandas as pd
 
 

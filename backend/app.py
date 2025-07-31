@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-from models import BacktestRequest
+from backend.models import BacktestRequest
+from backend.run import run_backtest
 
 
 app = FastAPI()
@@ -21,13 +22,18 @@ app.add_middleware(
 )
 
 
-@app.get("/strategy")
+@app.post("/strategy")
 async def root(body: BacktestRequest):
-    logger.info("Hello from the main api route!")
-    return {
-        "message": f"Welcome to the backtesting engine!",
-    }
+    logger.info(
+        f"Running backtest for {body.ticker} with {body.strategies} strategies")
+
+    try:
+        results = run_backtest(body)
+        return results
+    except Exception as e:
+        logger.error(f"Error running backtest: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("backend.app:app", host="0.0.0.0", port=8000, reload=True)

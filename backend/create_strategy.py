@@ -1,6 +1,6 @@
 from src.strategies import CustomStrategy, MovingAverageCross, RSICross, RSIExtremes, Strategy
 from typing import List, Literal
-from models import StrategyConfig
+from backend.models import StrategyConfig
 
 strategy_mapping = {
     "moving_average_cross": MovingAverageCross,
