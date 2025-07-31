@@ -1,4 +1,4 @@
-from src.strategies import CustomStrategy, MovingAverageCross, RSICross, RSIExtremes
+from src.strategies import CustomStrategy, MovingAverageCross, RSICross, RSIExtremes, Strategy
 from typing import List, Literal
 from models import StrategyConfig
 
@@ -17,13 +17,13 @@ def create_strategy(strategies: List[StrategyConfig]):
             if strategy_config.type not in strategy_mapping:
                 raise ValueError("Strategy not yet implemented!")
 
-            strategy_builder = strategy_mapping[strategy_config.type]
+            strategy_builder: Strategy = strategy_mapping[strategy_config.type]
 
-            strategy_args = strategy_builder.get_args(strategy_config.params)
+            strategy_object = strategy_builder.generate_from_params(
+                strategy_config.params)
 
-            new_strategy = strategy_builder()
+            custom_strategy.add_strategy(strategy_object)
 
-            custom_strategy.add_strategy(new_strategy)
-
+        return custom_strategy
     except Exception as e:
         raise e
