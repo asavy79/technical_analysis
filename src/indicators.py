@@ -94,9 +94,9 @@ class RSI(Indicator):
             rs = avg_gain / avg_loss
 
             # Handle edge cases (division by zero, infinite values)
-            rs = rs.replace([np.inf, -np.inf], np.nan).fillna(0)
-
+            rs = rs.replace([np.inf, -np.inf], np.nan)
             rsi = 100 - (100 / (1 + rs))
+            rsi[:self.period] = np.nan
             return rsi
 
         except Exception as e:
