@@ -85,7 +85,8 @@ class BackTest:
                 'avg_losing_trade': 0.0,
                 'max_drawdown': 0.0,
                 'sharpe_ratio': 0.0,
-                'final_capital': self.initial_capital
+                'final_capital': self.initial_capital,
+                'trades': []
             }
 
         total_trades = len(trades)
@@ -127,7 +128,8 @@ class BackTest:
             'avg_losing_trade': avg_losing_trade,
             'max_drawdown': max_drawdown,
             'sharpe_ratio': sharpe_ratio,
-            'final_capital': final_capital
+            'final_capital': final_capital,
+            'trades': trades.to_dict()
         }
 
     def print_results(self, results: Dict):

@@ -13,5 +13,4 @@ def run_backtest(request: BacktestRequest):
     backtest_object = BackTest(initial_capital=int(request.initial_capital))
 
     results = backtest_object.run_backtest(stock_object, custom_strategy)
-
     return results['metrics']
