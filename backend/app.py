@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 from backend.models import BacktestRequest
 from backend.run import run_backtest
+from backend.strategy_config import available_strategies
 
 
 app = FastAPI()
@@ -22,7 +23,7 @@ app.add_middleware(
 )
 
 
-@app.post("/strategy")
+@app.post("/backtest")
 async def root(body: BacktestRequest):
     logger.info(
         f"Running backtest for {body.ticker} with {body.strategies} strategies")
@@ -33,6 +34,11 @@ async def root(body: BacktestRequest):
     except Exception as e:
         logger.error(f"Error running backtest: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/strategies")
+async def get_strategies():
+    return available_strategies
 
 
 if __name__ == "__main__":

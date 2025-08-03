@@ -1,11 +1,7 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
+import Home from "./pages/home";
 
-const Home = () => (
-  <div className="p-8">
-    <h1 className="text-3xl">Home Page</h1>
-  </div>
-);
 const About = () => (
   <div className="p-8">
     <h1 className="text-3xl">About Page</h1>
