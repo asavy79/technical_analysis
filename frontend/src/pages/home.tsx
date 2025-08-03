@@ -3,6 +3,10 @@ import type { StrategyConfig } from "../utils/types";
 import AddStrategy from "../components/AddStrategy";
 import StrategyCard from "../components/StrategyCard";
 import { testStrategy } from "../services/strategies";
+import { type BacktestResult} from "../utils/types";
+import StrategyResults from "../components/StrategyResults";
+import { validateInput } from "../utils/helpers";
+
 
 
 
@@ -18,17 +22,29 @@ export default function Home() {
   const [initialCapital, setInitialCapital] = useState<number>(10000);
   const [period, setPeriod] = useState<string>("1y");
 
-  const [rawData, setRawData] = useState("");
+  const [rawData, setRawData] = useState<BacktestResult | null>(null);
+
+  const [error, setError] = useState("");
 
   const handleTestStrategy = async () => {
-    const result = await testStrategy(strategies, ticker, initialCapital, period);
+    setError("");
+    setRawData(null);
 
-    if(!result.success) {
-      console.error(result.error);
+    const validationResult = validateInput(strategies, ticker, initialCapital, period);
+
+    if (!validationResult.success) {
+      setError(validationResult.error);
       return;
     }
 
-    setRawData(JSON.stringify(result.data, null, 2));
+    const result = await testStrategy(strategies, ticker, initialCapital, period);
+
+    if(!result.success) {
+      setError("Invalid input. Please try again.");
+      return;
+    }
+
+    setRawData(result.data);
   }
 
   const handleAddStrategy = (strategy: StrategyConfig) => {
@@ -47,7 +63,7 @@ export default function Home() {
 
 
   return (
-    <div className="max-w-xl mx-auto p-8 space-y-6">
+    <div className="max-w-6xl mx-auto p-8 space-y-6">
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Strategies</h1>
         {strategies.map((strategy) => (
@@ -55,7 +71,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Make a modal for adding strategy*/}
       {isAddingStrategy ? (
         <div className="fixed inset-0 bg-opacity-50 items-center">
           <AddStrategy onAddStrategy={handleAddStrategy} onCancel={() => setIsAddingStrategy(false)} />
@@ -88,8 +103,10 @@ export default function Home() {
         </button>
       </div>
 
-      <div>
-        <pre>{rawData}</pre>
+      {error && <div className="text-red-500">{error}</div>}
+
+      <div className="mt-8">
+        {rawData && <StrategyResults backtestResults={rawData} />}
       </div>
 
     </div>

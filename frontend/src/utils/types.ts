@@ -38,20 +38,65 @@ export const strategyRegistry: Record<string, StrategyMeta> = {
 
 
 type RSIStrategy = {
-    name: "RSI Extremes";
-    id: string;
-    rsi_period: number;
-    overbought_threshold: number;
-    oversold_threshold: number;
-  };
-  
-  type MAStrategy = {
-    name: "Moving Average Cross";
-    id: string;
-    lower_period: number;
-    upper_period: number;
-    ma_type: string;
-  };
-  
+  name: "RSI Extremes";
+  id: string;
+  rsi_period: number;
+  overbought_threshold: number;
+  oversold_threshold: number;
+};
+
+type MAStrategy = {
+  name: "Moving Average Cross";
+  id: string;
+  lower_period: number;
+  upper_period: number;
+  ma_type: string;
+};
+
 export type StrategyConfig = RSIStrategy | MAStrategy;
-  
+
+
+
+export type RawTrades = {
+  entry_date: Record<string, string>;
+  exit_date: Record<string, string>;
+  entry_price: Record<string, number>;
+  exit_price: Record<string, number>;
+  return: Record<string, number>;
+  duration: Record<string, number>;
+};
+
+
+export type FormattedTrade = {
+  entry_date: string;
+  exit_date: string;
+  entry_price: number;
+  exit_price: number;
+  return: number;
+  duration: number;
+};
+
+export type Trade = {
+  entry_date: string;
+  exit_date: string;
+  entry_price: number;
+  exit_price: number;
+  return: number;
+  duration: number;
+};
+
+export type BacktestResult = {
+  total_return: number;
+  total_trades: number;
+  winning_trades: number;
+  losing_trades: number;
+  win_rate: number;
+  avg_return_per_trade: number;
+  avg_winning_trade: number;
+  avg_losing_trade: number;
+  max_drawdown: number;
+  sharpe_ratio: number;
+  final_capital: number;
+  trades: Trade[];
+};
+

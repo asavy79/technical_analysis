@@ -117,6 +117,8 @@ class BackTest:
         else:
             sharpe_ratio = 0.0
 
+        trades_arr = trades.to_dict(orient='records')
+
         return {
             'total_return': cumulative_return,
             'total_trades': total_trades,
@@ -129,7 +131,7 @@ class BackTest:
             'max_drawdown': max_drawdown,
             'sharpe_ratio': sharpe_ratio,
             'final_capital': final_capital,
-            'trades': trades.to_dict()
+            'trades': trades_arr
         }
 
     def print_results(self, results: Dict):
