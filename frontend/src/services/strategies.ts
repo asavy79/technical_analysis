@@ -1,42 +1,44 @@
 import axios from "./api";
-import { StrategyProps } from "../components/EditStrategy";
+import type { StrategyConfig } from "../utils/types";
 
-interface GetStrategyParamsResponse {
-  success: boolean;
-  data: StrategyProps | null;
-  error?: string;
-}
 
+const formatStrategyParams = (strategies: StrategyConfig[]) => {
+  return strategies.map((strategy) => {
+    return {
+      type: strategy.id,
+      params: {
+        ...strategy,
+      }
+    };
+  });
+};
 
 export type StrategyMetadata = {
-    [key: string]: {
-      label: string;
-      params: {
-        [param: string]: {
-          type: string;
-        };
+  [key: string]: {
+    label: string;
+    params: {
+      [param: string]: {
+        type: string;
       };
     };
   };
-  
+};
 
-export async function getStrategyParams(): Promise<GetStrategyParamsResponse> {
+
+export async function testStrategy(strategies: StrategyConfig[], ticker: string, initial_capital: number, period: string) {
   try {
-    const result = await axios.get("/strategy-params");
+    const result = await axios.post("/backtest", { strategies: formatStrategyParams(strategies), ticker, initial_capital: String(initial_capital), period });
+    console.log(result.data);
     return {
       success: true,
       data: result.data,
     };
-  } catch (error: any) {
-    console.error("Error fetching strategy params:", error);
+  } catch (error) {
+    console.error("Error testing strategy:", error);
     return {
       success: false,
       data: null,
-      error: error?.message ?? "Unknown error",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
-}
-
-export async function testStrategy() {
-
 }

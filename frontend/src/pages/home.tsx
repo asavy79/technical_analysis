@@ -1,65 +1,97 @@
-import { StrategyForm } from "../components/EditStrategy";
 import { useState } from "react";
 import type { StrategyConfig } from "../utils/types";
-import { strategyRegistry } from "../utils/types";
-import * as React from "react";
+import AddStrategy from "../components/AddStrategy";
+import StrategyCard from "../components/StrategyCard";
+import { testStrategy } from "../services/strategies";
 
-// Define default parameters per strategy
-const defaultStrategies: Record<StrategyConfig["name"], StrategyConfig> = {
-  "RSI Extremes": {
-    name: "RSI Extremes",
-    id: "rsi_extremes",
-    rsi_period: 14,
-    overbought_threshold: 70,
-    oversold_threshold: 30,
-  },
-  "Moving Average Cross": {
-    name: "Moving Average Cross",
-    id: "moving_average_cross",
-    lower_period: 50,
-    upper_period: 200,
-    ma_type: "SMA",
-  },
-};
+
 
 export default function Home() {
-  const [strategy, setStrategy] = useState<StrategyConfig>(
-    defaultStrategies["RSI Extremes"]
-  );
 
-  const onSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    console.log(strategy);
-  };
+  const [ticker, setTicker] = useState<string>("");
+  const [strategies, setStrategies] = useState<StrategyConfig[]>([]);
+
+  const [strategyIdSet, setStrategyIdSet] = useState<Set<string>>(new Set());
+
+  const [isAddingStrategy, setIsAddingStrategy] = useState(false);
+
+  const [initialCapital, setInitialCapital] = useState<number>(10000);
+  const [period, setPeriod] = useState<string>("1y");
+
+  const [rawData, setRawData] = useState("");
+
+  const handleTestStrategy = async () => {
+    const result = await testStrategy(strategies, ticker, initialCapital, period);
+
+    if(!result.success) {
+      console.error(result.error);
+      return;
+    }
+
+    setRawData(JSON.stringify(result.data, null, 2));
+  }
+
+  const handleAddStrategy = (strategy: StrategyConfig) => {
+    if (strategyIdSet.has(strategy.id)) {
+      return;
+    }
+    setStrategyIdSet(new Set([...strategyIdSet, strategy.id]));
+    setStrategies([...strategies, strategy]);
+    setIsAddingStrategy(false);
+  }
+
+  const handleRemoveStrategy = (strategy: StrategyConfig) => {
+    setStrategies(strategies.filter((s) => s.id !== strategy.id));
+    setStrategyIdSet(new Set([...Array.from(strategyIdSet).filter((id) => id !== strategy.id)]));
+  }
+
 
   return (
     <div className="max-w-xl mx-auto p-8 space-y-6">
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Select Strategy
-        </label>
-        <select
-          value={strategy.name}
-          onChange={(e) =>
-            setStrategy(
-              defaultStrategies[e.target.value as StrategyConfig["name"]]
-            )
-          }
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-        >
-          {Object.keys(defaultStrategies).map((strategyName) => (
-            <option key={strategyName} value={strategyName}>
-              {strategyRegistry[strategyName].label}
-            </option>
-          ))}
-        </select>
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold">Strategies</h1>
+        {strategies.map((strategy) => (
+          <StrategyCard key={strategy.id} strategy={strategy} handleRemove={handleRemoveStrategy} />
+        ))}
       </div>
 
-      <StrategyForm
-        strategy={strategy}
-        onChange={setStrategy}
-        onSubmit={onSubmit}
-      />
+      {/* Make a modal for adding strategy*/}
+      {isAddingStrategy ? (
+        <div className="fixed inset-0 bg-opacity-50 items-center">
+          <AddStrategy onAddStrategy={handleAddStrategy} onCancel={() => setIsAddingStrategy(false)} />
+        </div>
+      ) : (
+        <div className="flex justify-center">
+          <button className="bg-blue-500 text-white p-3 rounded-lg cursor-pointer" onClick={() => setIsAddingStrategy(true)}>
+            Add Strategy
+          </button>
+        </div>
+      )}
+
+      <div className="flex justify-between items-center">
+        <input type="text" value={ticker} onChange={(e) => setTicker(e.target.value)} className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Enter ticker" />
+      </div>
+
+      <div className="flex flex-col justify-between items-center">
+        <label htmlFor="initialCapital">Initial Capital</label>
+        <input type="number" value={initialCapital} onChange={(e) => setInitialCapital(Number(e.target.value))} className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Enter initial capital" />
+      </div>
+
+      <div className="flex flex-col justify-between items-center">
+        <label htmlFor="period">Period</label>
+        <input type="text" value={period} onChange={(e) => setPeriod(e.target.value)} className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Enter period" />
+      </div>
+
+      <div className="flex flex-col justify-between items-center">
+        <button className="bg-blue-500 text-white p-3 rounded-lg cursor-pointer" onClick={handleTestStrategy}>
+          Test Strategy
+        </button>
+      </div>
+
+      <div>
+        <pre>{rawData}</pre>
+      </div>
+
     </div>
   );
 }
