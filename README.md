@@ -1,182 +1,222 @@
-# Technical Analysis Research Project
+# Technical Analysis & Strategy Backtesting Platform
 
-A Python-based technical analysis tool I built to learn about algorithmic trading and market analysis. This project includes various technical indicators and trading strategies, with a particular focus on moving average crossovers and RSI crosses.
+A comprehensive technical analysis platform featuring both Python-based strategy development and a modern web interface for strategy testing and visualization. This project demonstrates object-oriented design principles applied to financial data analysis and algorithmic trading research.
 
-## 🎯 Project Goals
+## Overview
 
-This project was created to:
-- Learn about technical analysis and algorithmic trading concepts
-- Implement and test various trading strategies from scratch
-- Significantly speed up the process of strategy backtesting
+This platform provides a complete toolkit for developing, testing, and analyzing trading strategies with both programmatic and web-based interfaces.
 
+## Architecture
 
-## 🚀 Features Implemented
+### Backend Components
 
-### **Core Architecture**
-- **MarketData Class**: Centralized data management with automatic indicator caching
-- **Indicator Framework**: Extensible system supporting SMA, EMA, RSI, and MACD components
-- **Strategy System**: Parameterized strategies that automatically determine data requirements
-- **Backtesting Engine**: Comprehensive performance analysis with professional metrics
+**Core Engine (`src/`)**
 
-### **Technical Indicators**
-- **Simple Moving Average (SMA)**: Configurable period lengths
-- **Exponential Moving Average (EMA)**: Configurable period lengths  
-- **Relative Strength Index (RSI)**: Momentum oscillator with customizable periods
-- **MACD Components**: Separate classes for MACD Line, Signal Line, and Histogram
+- `main.py` - MarketData class with intelligent indicator caching
+- `indicators.py` - Technical indicator implementations (SMA, EMA, RSI, MACD)
+- `strategies.py` - Trading strategy framework with multiple implementations
+- `back_testing.py` - Comprehensive backtesting engine with performance metrics
 
-### **Trading Strategies**
-- **Moving Average Crossover**: Supports both SMA and EMA with any period combination
-- **RSI Crossover**: Configurable overbought/oversold thresholds
-- **RSI Extremes**: Buy/sell based on RSI levels
-- **MACD Crossover**: Classic MACD line vs signal line strategy
-- **MACD Histogram**: Momentum-based signals from histogram zero crossings
+**Web API (`backend/`)**
 
-### **Performance Analysis**
-- **Comprehensive Metrics**: Total return, win rate, Sharpe ratio, maximum drawdown
-- **Trade Tracking**: Detailed entry/exit analysis with duration and returns
-- **Strategy Comparison**: Side-by-side performance evaluation
-- **Professional Reporting**: Formatted results with key statistics
+- `app.py` - FastAPI server with CORS support
+- `models.py` - Pydantic data models for API requests
+- `run.py` - Backtesting execution interface
+- `strategy_config.py` - Available strategy configurations
 
-## 📁 Project Structure
+### Frontend (`frontend/`)
 
-```
-src/
-├── main.py           # MarketData class for data management and caching
-├── indicators.py     # Technical indicator implementations
-├── strategies.py     # Trading strategy implementations
-├── back_testing.py   # Backtesting framework with performance metrics
-└── test_func.py      # Demonstration script and usage examples
+Modern React application built with TypeScript and Tailwind CSS featuring:
 
-tests/
-└── test_sma.py       # Unit tests for SMA indicator
-```
+- Interactive custom strategy configuration interface
+- Real-time backtesting execution
+- Results visualization with metrics cards
+- Trade-by-trade analysis tables
 
-## 🛠️ Installation & Setup
+## Features
 
-1. **Clone the repository:**
-```bash
-git clone [your-repository-url]
-cd technical_analysis
-```
+### Technical Indicators
 
-2. **Install dependencies:**
+- **Simple Moving Average (SMA)** - Configurable period lengths
+- **Exponential Moving Average (EMA)** - Smoothed price averaging
+- **Relative Strength Index (RSI)** - Momentum oscillator with customizable periods
+- **MACD Components** - Line, Signal Line, and Histogram with separate implementations
+
+### Trading Strategies
+
+- **Moving Average Crossover** - Both SMA and EMA with configurable periods
+- **RSI Crossover** - Signal generation based on RSI threshold crossings
+- **RSI Extremes** - Buy/sell signals from overbought/oversold levels
+- **MACD Crossover** - Classic MACD line vs signal line strategy
+- **MACD Histogram** - Momentum signals from histogram zero crossings
+- **Custom Strategy** - Combine multiple strategies with AND/OR logic
+
+### Performance Analysis
+
+- **Comprehensive Metrics** - Total return, win rate, Sharpe ratio, maximum drawdown
+- **Trade Analysis** - Entry/exit prices, duration, individual trade returns
+- **Risk Assessment** - Drawdown analysis and risk-adjusted returns
+
+## Installation & Setup
+
+### Prerequisites
+
+- Python 3.8+
+- Node.js 16+
+- npm or yarn
+
+### Backend Setup
+
+1. **Install Python dependencies:**
+
 ```bash
 pip install -r requirements.txt
 ```
 
-## 💡 Usage Examples
+2. **Start the FastAPI server:**
 
-### **Basic Market Data and Indicators**
-```python
-from main import MarketData
-from indicators import SMA, EMA, RSI, MACDLine
-
-# Create market data with automatic caching
-data = MarketData("AAPL", "2y")
-
-# Create indicators
-sma_50 = SMA(50)
-sma_200 = SMA(200)
-rsi_14 = RSI(14)
-
-# Get indicator values (automatically cached)
-sma_50_values = data.get_indicator_data(sma_50)
-sma_200_values = data.get_indicator_data(sma_200)
-rsi_values = data.get_indicator_data(rsi_14)
+```bash
+python -m backend.app
 ```
 
-### **Strategy Implementation**
-```python
-from strategies import MovingAverageCross, RSICross, MACDCross
-from back_testing import BackTest
+The API will be available at `http://localhost:8000`
 
-# Create the effective 50-200 day strategy
+### Frontend Setup
+
+1. **Install dependencies:**
+
+```bash
+cd frontend
+npm install
+```
+
+2. **Start the development server:**
+
+```bash
+npm run dev
+```
+
+The web interface will be available at `http://localhost:5173`
+
+## Usage
+
+### Python API
+
+```python
+from src.main import MarketData
+from src.strategies import MovingAverageCross, RSICross
+from src.back_testing import BackTest
+
+# Create market data instance
+data = MarketData("AAPL", "2y")
+
+# Configure strategy
 strategy = MovingAverageCross(lower_period=50, upper_period=200, ma_type="SMA")
 
-# Create RSI strategy
-rsi_strategy = RSICross(rsi_period=14, lower_bound=30, upper_bound=70)
-
-# Create MACD strategy
-macd_strategy = MACDCross(short_period=12, long_period=26, signal_period=9)
-
-# Run comprehensive backtests
+# Run backtest
 backtest = BackTest(initial_capital=10000)
 results = backtest.run_backtest(data, strategy)
 backtest.print_results(results)
 ```
 
-### **MACD Components Usage**
-```python
-from indicators import MACDLine, MACDSignal, MACDHistogram
+### Web Interface
 
-# Use MACD components separately
-macd_line = MACDLine(12, 26)
-macd_signal = MACDSignal(12, 26, 9)
-macd_histogram = MACDHistogram(12, 26, 9)
+1. Open the web application
+2. Add one or more trading strategies using the interface
+3. Enter a stock ticker symbol (e.g., "AAPL", "TSLA")
+4. Set initial capital and time period
+5. Click "Test Strategy" to run the backtest
+6. Review comprehensive results including performance metrics and trade history
 
-# Each component is cached independently
-line_values = data.get_indicator_data(macd_line)
-signal_values = data.get_indicator_data(macd_signal)
-histogram_values = data.get_indicator_data(macd_histogram)
+### Strategy Configuration Examples
+
+**Moving Average Crossover:**
+
+- Lower Period: 50
+- Upper Period: 200
+- MA Type: SMA
+
+**RSI Extremes:**
+
+- RSI Period: 14
+- Oversold Threshold: 30
+- Overbought Threshold: 70
+
+**MACD Crossover:**
+
+- Short Period: 12
+- Long Period: 26
+- Signal Period: 9
+
+## Technical Implementation
+
+### Object-Oriented Design
+
+- **Abstract Base Classes** - Strategy and Indicator interfaces ensure consistency
+- **Intelligent Caching** - Indicators are cached to prevent recomputation
+- **Parameterized Strategies** - Easy experimentation with different configurations
+- **Data Validation** - Comprehensive input validation and error handling
+
+### API Design
+
+- **RESTful Interface** - Clean API endpoints for strategy execution
+- **Type Safety** - Pydantic models for request/response validation
+- **CORS Support** - Enables frontend-backend communication
+- **Error Handling** - Graceful error responses with detailed messages
+
+### Frontend Architecture
+
+- **TypeScript** - Type-safe React components
+- **Tailwind CSS** - Utility-first styling framework
+- **Component Architecture** - Reusable UI components for consistency
+- **State Management** - Efficient state handling for strategy configuration
+
+## Testing
+
+The project includes comprehensive testing:
+
+```bash
+# Run Python tests
+python -m pytest tests/
+
+# Run frontend linting
+cd frontend
+npm run lint
 ```
 
-### **Strategy Comparison**
-```python
-# Compare multiple strategies on the same data
-strategies = [
-    ("50-200 SMA Cross", MovingAverageCross(50, 200, "SMA")),
-    ("12-26 EMA Cross", MovingAverageCross(12, 26, "EMA")),
-    ("RSI Cross", RSICross(14, 30, 70)),
-    ("MACD Cross", MACDCross(12, 26, 9)),
-]
+## API Endpoints
 
-for name, strategy in strategies:
-    results = backtest.run_backtest(data, strategy)
-    print(f"{name}: {results['metrics']['total_return']:.2%} return")
+- `POST /backtest` - Execute strategy backtest
+- `GET /strategies` - Retrieve available strategy configurations
+
+## Project Structure
+
+```
+tech-analysis/
+├── src/                    # Core Python engine
+│   ├── main.py            # Market data management
+│   ├── indicators.py      # Technical indicators
+│   ├── strategies.py      # Trading strategies
+│   └── back_testing.py    # Backtesting framework
+├── backend/               # FastAPI web server
+│   ├── app.py            # Main API application
+│   ├── models.py         # Data models
+│   └── run.py            # Execution interface
+├── frontend/              # React web application
+│   ├── src/
+│   │   ├── components/   # UI components
+│   │   ├── pages/        # Application pages
+│   │   ├── services/     # API communication
+│   │   └── utils/        # Helper functions
+│   └── package.json
+├── tests/                 # Test suite
+└── requirements.txt       # Python dependencies
 ```
 
-## 🔧 Technical Highlights
+## Contributing
 
-### **Intelligent Caching System**
-- Indicators are automatically cached to prevent recomputation
-- Cache keys based on indicator parameters ensure accuracy
-- Significant performance improvements for complex strategies
+This project demonstrates modern software engineering practices applied to financial markets. Contributions and suggestions for improvements are welcome.
 
-### **Flexible Strategy Framework**
-- Strategies automatically determine their data requirements
-- Parameterized approach allows easy experimentation
-- Built-in validation ensures data compatibility
+## Disclaimer
 
-### **Professional Backtesting**
-- Realistic trade simulation with proper position management
-- Comprehensive performance metrics including Sharpe ratio and drawdown
-- Detailed trade-by-trade analysis
-
-### **Robust Error Handling**
-- Input validation for all parameters
-- Graceful handling of API failures and data issues
-- Clear error messages for debugging
-
-
-## 🧪 Testing & Validation
-
-- **Unit Tests**: Testing for the main features
-- **Integration Tests**: End-to-end strategy validation
-- **Performance Tests**: Backtesting across multiple market conditions
-
-## 🤝 Contributing
-
-This is primarily a learning project, but I'm always open to feedback and suggestions for improvement!
-
-## 📚 Resources Used
-
-- Technical analysis literature and trading books
-- Financial data APIs (Yahoo Finance) and documentation
-- Python libraries for data analysis and visualization
-- Market research on effective trading strategies
-- Software engineering best practices and design patterns
-
-
----
-
-*Use at your own risk. No strategy generated here is guaranteed to generate positive returns. Have fun ;)*
+This software is for educational and research purposes only. Past performance does not guarantee future results. Trading strategies should be thoroughly tested and validated before any real-world application.
