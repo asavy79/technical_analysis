@@ -1,0 +1,6 @@
+*.csv
+__pycache__/
+*.vscode/
+virtual_env/
+venv/
+.venv/

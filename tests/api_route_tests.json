@@ -1,0 +1,40 @@
+[{
+    "ticker": "GOOGL",
+    "period": "2y",
+    "initial_capital": "50000",
+    "strategies": [
+      {
+        "type": "moving_average_cross",
+        "params": {
+          "lower_period": 5,
+          "upper_period": 15,
+          "ma_type": "SMA"
+        }
+      },
+      {
+        "type": "moving_average_cross",
+        "params": {
+          "lower_period": 20,
+          "upper_period": 50,
+          "ma_type": "EMA"
+        }
+      }
+    ]
+  },
+  {
+    "ticker": "TSLA",
+    "period": "3mo",
+    "initial_capital": "15000",
+    "strategies": [
+      {
+        "type": "rsi_extremes",
+        "params": {
+          "rsi_period": 14,
+          "oversold_threshold": 20,
+          "overbought_threshold": 80
+        }
+      }
+    ]
+  }
+]
+
