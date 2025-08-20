@@ -6,6 +6,7 @@ import { testStrategy } from "../services/strategies";
 import { type BacktestResult } from "../utils/types";
 import StrategyResults from "../components/StrategyResults";
 import { validateInput } from "../utils/helpers";
+import FormInput from "../components/FormInput";
 
 export default function Home() {
   const [ticker, setTicker] = useState<string>("");
@@ -102,51 +103,41 @@ export default function Home() {
         </div>
       )}
 
-      <div className="flex justify-between items-center">
-        <input
-          type="text"
-          value={ticker}
-          onChange={(e) => setTicker(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          placeholder="Enter ticker"
-        />
-      </div>
+      <FormInput
+        form="text"
+        options={[]}
+        label="Ticker"
+        onChange={(e) => setTicker(e.target.value)}
+        placeholder="Enter ticker"
+        value={ticker}
+      />
 
-      <div className="flex flex-col justify-between items-center">
-        <label htmlFor="initialCapital">Initial Capital</label>
-        <input
-          type="number"
-          value={initialCapital}
-          onChange={(e) => setInitialCapital(Number(e.target.value))}
-          className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          placeholder="Enter initial capital"
-        />
-      </div>
+      <FormInput
+        form="number"
+        options={[]}
+        label="Initial Capital"
+        onChange={(e) => setInitialCapital(Number(e.target.value))}
+        value={initialCapital}
+        placeholder="Enter initial capital"
+      />
 
-      <div className="flex flex-col justify-between items-center">
-        <label htmlFor="period">Period</label>
-        <input
-          type="text"
-          value={period}
-          onChange={(e) => setPeriod(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          placeholder="Enter period"
-        />
-      </div>
+      <FormInput
+        form="text"
+        options={[]}
+        label="Period"
+        onChange={(e) => setPeriod(e.target.value)}
+        value={period}
+        placeholder="Enter period"
+      />
 
-      <div className="flex flex-col justify-between items-center">
-        <label htmlFor="period">Mode</label>
-        <div>
-          <select
-            value={mode}
-            onChange={(e) => setMode(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white text-gray-900 px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-          >
-            <option value="any">Any</option>
-            <option value="all">All</option>
-          </select>
-        </div>
-      </div>
+      <FormInput
+        form="select"
+        options={["any", "all"]}
+        label="Mode"
+        onChange={(e) => setMode(e.target.value)}
+        value={mode}
+        placeholder="Enter mode"
+      />
 
       <div className="flex flex-col justify-between items-center">
         <button
