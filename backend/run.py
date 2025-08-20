@@ -8,7 +8,7 @@ from backend.create_strategy import create_strategy
 def run_backtest(request: BacktestRequest):
     stock_object = MarketData(request.ticker, request.period)
 
-    custom_strategy = create_strategy(request.strategies)
+    custom_strategy = create_strategy(request.strategies, request.mode)
 
     backtest_object = BackTest(initial_capital=int(request.initial_capital))
 

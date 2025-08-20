@@ -10,8 +10,8 @@ strategy_mapping = {
 }
 
 
-def create_strategy(strategies: List[StrategyConfig]):
-    custom_strategy = CustomStrategy(mode="any")
+def create_strategy(strategies: List[StrategyConfig], mode: Literal["any", "all"]):
+    custom_strategy = CustomStrategy(mode=mode)
     try:
 
         for strategy_config in strategies:

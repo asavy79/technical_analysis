@@ -25,9 +25,9 @@ export type StrategyMetadata = {
 };
 
 
-export async function testStrategy(strategies: StrategyConfig[], ticker: string, initial_capital: number, period: string) {
+export async function testStrategy(strategies: StrategyConfig[], ticker: string, initial_capital: number, period: string, mode: string) {
   try {
-    const result = await axios.post("/backtest", { strategies: formatStrategyParams(strategies), ticker, initial_capital: String(initial_capital), period });
+    const result = await axios.post("/backtest", { strategies: formatStrategyParams(strategies), ticker, initial_capital: String(initial_capital), period, mode });
     console.log(result.data);
     return {
       success: true,

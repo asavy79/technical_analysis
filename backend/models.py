@@ -13,3 +13,4 @@ class BacktestRequest(BaseModel):
     period: str
     initial_capital: str
     strategies: List[StrategyConfig]
+    mode: str

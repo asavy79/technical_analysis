@@ -278,6 +278,7 @@ class CustomStrategy(Strategy):
     def __init__(self, mode='all'):
         self.strategies: List[Strategy] = []
         if mode not in ['all', 'any', 'majority']:
+            print(mode)
             raise ValueError(
                 "Custom strategy mode must be either 'all', 'any', or 'majority'")
         self.mode = mode
